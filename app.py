@@ -5,8 +5,12 @@ import os
 
 app = Flask(__name__)
 
-# Load model
-model = pickle.load(open('model.pkl', 'rb'))
+# Load trained model
+try:
+    model = pickle.load(open('model.pkl', 'rb'))
+except Exception as e:
+    print(f"Error loading model: {e}")
+    model = None
 
 @app.route('/')
 def home():
@@ -14,9 +18,13 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    if model is None:
+        return "Model not loaded. Please check server logs."
+
     try:
+        # Collect features from form
         features = [float(x) for x in request.form.values()]
-        # If less than 13 features, pad with zeros
+        # Pad with zeros if less than 13 features
         while len(features) < 13:
             features.append(0.0)
 
@@ -29,7 +37,9 @@ def predict():
     except Exception as e:
         return f"Error occurred: {e}"
 
-# Run app
+# Run app locally or on Render
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render assigns PORT
-    app.run(host="0.0.0.0", port=port, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    # Only run Flask debug server if not on Render
+    if os.environ.get("RENDER") is None:
+        app.run(host="0.0.0.0", port=port, debug=True)
