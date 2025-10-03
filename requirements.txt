@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 streamlit==1.29.0
 scikit-learn
 pandas
 numpy
+=======
+Flask==2.3.3
+gunicorn==20.1.0
+pandas==2.1.1
+numpy>=1.26
+>>>>>>> d3b765688500478c8fd09abf46b83e973ba3ad35
